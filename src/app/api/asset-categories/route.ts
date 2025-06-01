@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) { // Renamed 'request' to '_request'
   // Asset categories are likely needed by any authenticated user to categorize their assets.
   // If they were user-specific, the schema would need a userId on AssetCategory.
   // As they are global, authenticating the user seems appropriate for now.

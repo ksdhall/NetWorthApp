@@ -154,14 +154,18 @@ export default function MutualFundForm({
       const responseData = await response.json();
       if (!response.ok) {
         const message = Array.isArray(responseData.error)
-          ? responseData.error.map((e: any) => `${e.path.join('.')}: ${e.message}`).join('; ')
+          ? responseData.error.map((e: { path: (string|number)[]; message: string; }) => `${e.path.join('.')}: ${e.message}`).join('; ')
           : (responseData.error?.message || responseData.error || 'Failed to save mutual fund');
         throw new Error(message);
       }
       onSave();
       onClose();
-    } catch (err: any) {
-      setServerError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
       console.error("Save error:", err);
     } finally {
       setIsSubmitting(false);

@@ -1,3 +1,5 @@
+import Link from 'next/link'; // Import Link
+
 export default function VerifyRequestPage() {
   return (
     <div style={{
@@ -19,22 +21,24 @@ export default function VerifyRequestPage() {
         <p style={{ fontSize: '1.1em', color: '#555' }}>
           Please check your inbox and click the link to complete your sign-in.
         </p>
-        <a href="/" style={{
-          display: 'inline-block',
-          marginTop: '30px',
-          padding: '12px 25px',
-          backgroundColor: '#0070f3',
-          color: 'white',
-          textDecoration: 'none',
-          borderRadius: '5px',
-          fontSize: '1em',
-          transition: 'background-color 0.2s ease'
-        }}
-        onMouseOver={(e) => e.currentTarget.style.background = '#005bb5'}
-        onMouseOut={(e) => e.currentTarget.style.background = '#0070f3'}
-        >
-          Go to Homepage
-        </a>
+        <Link href="/" passHref legacyBehavior>
+          <a style={{
+            display: 'inline-block',
+            marginTop: '30px',
+            padding: '12px 25px',
+            backgroundColor: '#0070f3',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '5px',
+            fontSize: '1em',
+            transition: 'background-color 0.2s ease'
+          }}
+          onMouseOver={(e) => { (e.target as HTMLAnchorElement).style.background = '#005bb5'; }}
+          onMouseOut={(e) => { (e.target as HTMLAnchorElement).style.background = '#0070f3'; }}
+          >
+            Go to Homepage
+          </a>
+        </Link>
       </div>
     </div>
   );

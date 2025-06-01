@@ -83,7 +83,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     const json = await request.json();
     const data = updateMutualFundSchema.parse(json);
 
-    let updateData = { ...data };
+    const updateData = { ...data }; // Changed let to const
     if (updateData.currency) {
       updateData.currency = updateData.currency.toUpperCase();
     }

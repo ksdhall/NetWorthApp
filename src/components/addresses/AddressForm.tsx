@@ -145,15 +145,19 @@ export default function AddressForm({
       if (!response.ok) {
         const errorData = await response.json();
         const message = Array.isArray(errorData.error)
-          ? errorData.error.map((e: any) => `${e.path.join('.')}: ${e.message}`).join('; ')
+          ? errorData.error.map((e: { path: (string|number)[]; message: string; }) => `${e.path.join('.')}: ${e.message}`).join('; ')
           : (errorData.error?.message || errorData.error || 'Failed to save address');
         throw new Error(message);
       }
 
       onSave();
       onClose();
-    } catch (err: any) {
-      setServerError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
       console.error("Save error:", err);
     } finally {
       setIsSubmitting(false);

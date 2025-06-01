@@ -18,12 +18,6 @@ import {
 import { BalanceEntry, Account as FinancialAccount } from '@prisma/client';
 import { z } from 'zod';
 
-// Helper to normalize date to the first of the month, UTC
-const normalizeToFirstOfMonthUTC = (date: Date): Date => {
-  const d = new Date(date); // Ensure it's a new Date object to avoid modifying original
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1, 0, 0, 0, 0));
-};
-
 // Zod schema for client-side validation
 const balanceEntryFormSchema = z.object({
   accountId: z.string().min(1, "Account ID is required."),
@@ -189,14 +183,18 @@ export default function BalanceEntryForm({
       const responseData = await response.json();
       if (!response.ok) {
         const message = Array.isArray(responseData.error)
-          ? responseData.error.map((e: any) => `${e.path.join('.')}: ${e.message}`).join('; ')
+          ? responseData.error.map((e: { path: (string|number)[]; message: string; }) => `${e.path.join('.')}: ${e.message}`).join('; ')
           : (responseData.error?.message || responseData.error || 'Failed to save balance entry');
         throw new Error(message);
       }
       onSave();
       onClose();
-    } catch (err: any) {
-      setServerError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
       console.error("Save error:", err);
     } finally {
       setIsSubmitting(false);
