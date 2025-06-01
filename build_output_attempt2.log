@@ -1,0 +1,30 @@
+
+> networthapp@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /app/node_modules/next-pwa/register.js
+> [PWA] Service worker: /app/public/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+ ✓ Compiled successfully in 12.0s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./next.config.ts:2:25
+Type error: Could not find a declaration file for module 'next-pwa'. '/app/node_modules/next-pwa/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/next-pwa` if it exists or add a new declaration (.d.ts) file containing `declare module 'next-pwa';`
+
+[0m [90m 1 |[39m [36mimport[39m type { [33mNextConfig[39m } [36mfrom[39m [32m"next"[39m[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m withPWAInit [36mfrom[39m [32m"next-pwa"[39m[33m;[39m[0m
+[0m [90m   |[39m                         [31m[1m^[22m[39m[0m
+[0m [90m 3 |[39m[0m
+[0m [90m 4 |[39m [36mconst[39m nextConfig[33m:[39m [33mNextConfig[39m [33m=[39m {[0m
+[0m [90m 5 |[39m   [90m// Existing config options will be preserved here if any were present[39m[0m
+Next.js build worker exited with code: 1 and signal: null
