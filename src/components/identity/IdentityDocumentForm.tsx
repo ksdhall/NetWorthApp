@@ -149,15 +149,19 @@ export default function IdentityDocumentForm({
         const errorData = await response.json();
         // errorData.error could be an array of Zod issues from backend or a string message
         const message = Array.isArray(errorData.error)
-          ? errorData.error.map((e: any) => e.message).join(', ')
+          ? errorData.error.map((e: { path?: (string|number)[]; message: string; }) => e.path ? `${e.path.join('.')}: ${e.message}` : e.message).join('; ')
           : (errorData.error?.message || errorData.error || 'Failed to save document');
         throw new Error(message);
       }
 
       onSave();
       onClose();
-    } catch (err: any) {
-      setServerError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
       console.error("Save error:", err);
     } finally {
       setIsSubmitting(false);

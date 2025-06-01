@@ -86,9 +86,12 @@ export async function POST(request: Request) {
     }
     if (typeof error === 'object' && error !== null && 'code' in error) {
         if (error.code === 'P2002' && typeof error.meta === 'object' && error.meta !== null && 'target' in error.meta) {
-            const target = error.meta.target as string[];
-            if (target.includes('accountId') && target.includes('entryDate')) {
-                 return NextResponse.json({ error: 'A balance entry for this account and month already exists.' }, { status: 409 });
+            const metaTarget = error.meta.target;
+            if (Array.isArray(metaTarget) && metaTarget.every(item => typeof item === 'string')) {
+                const target = metaTarget as string[]; // Now safer
+                if (target.includes('accountId') && target.includes('entryDate')) {
+                    return NextResponse.json({ error: 'A balance entry for this account and month already exists.' }, { status: 409 });
+                }
             }
         }
         if (error.code === 'P2003' && typeof error.meta === 'object' && error.meta !== null && 'field_name' in error.meta && String(error.meta.field_name).includes('accountId')) {
@@ -134,7 +137,7 @@ export async function GET(request: Request) {
         } else {
             return NextResponse.json({ error: "Invalid startDate format." }, { status: 400 });
         }
-    } catch (e) { return NextResponse.json({ error: "Invalid startDate." }, { status: 400 }); }
+    } catch (_e) { return NextResponse.json({ error: "Invalid startDate." }, { status: 400 }); }
   }
   if (endDateStr) {
     try {
@@ -145,7 +148,7 @@ export async function GET(request: Request) {
         } else {
             return NextResponse.json({ error: "Invalid endDate format." }, { status: 400 });
         }
-    } catch (e) { return NextResponse.json({ error: "Invalid endDate." }, { status: 400 }); }
+    } catch (_e) { return NextResponse.json({ error: "Invalid endDate." }, { status: 400 }); }
   }
 
   try {

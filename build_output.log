@@ -2,11 +2,6 @@
 > networthapp@0.1.0 build
 > next build
 
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
    ▲ Next.js 15.3.3
    - Environments: .env
 
@@ -18,62 +13,195 @@ https://nextjs.org/telemetry
 > [PWA] Service worker: /app/public/sw.js
 > [PWA]   url: /sw.js
 > [PWA]   scope: /
+ ✓ Compiled successfully in 22.0s
+   Linting and checking validity of types ...
+
 Failed to compile.
 
-./src/app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/app/globals.css
-Error: It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin. The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration.
-    at We (/app/node_modules/tailwindcss/dist/lib.js:35:2121)
-    at LazyResult.runOnRoot (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:329:16)
-    at LazyResult.runAsync (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:258:26)
-    at LazyResult.async (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:160:30)
-    at LazyResult.then (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:404:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+./src/app/api/accounts/[id]/route.ts
+77:9  Error: 'updateData' is never reassigned. Use 'const' instead.  prefer-const
 
-Import trace for requested module:
-./src/app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/app/globals.css
-./src/app/globals.css
+./src/app/api/accounts/route.ts
+86:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
 
-./src/app/globals.css
-Error: It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin. The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration.
-    at We (/app/node_modules/tailwindcss/dist/lib.js:35:2121)
-    at LazyResult.runOnRoot (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:329:16)
-    at LazyResult.runAsync (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:258:26)
-    at LazyResult.async (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:160:30)
-    at LazyResult.then (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:404:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at tryRunOrWebpackError (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:316142)
-    at __webpack_require_module__ (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
-    at __nested_webpack_require_161494__ (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
-    at /app/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
-    at symbolIterator (/app/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
-    at done (/app/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
-    at Hook.eval [as callAsync] (eval at create (/app/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:15:1)
-    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/app/node_modules/next/dist/compiled/webpack/bundle5.js:14:6378)
-    at /app/node_modules/next/dist/compiled/webpack/bundle5.js:29:130703
-    at symbolIterator (/app/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
--- inner error --
-Error: It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin. The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration.
-    at We (/app/node_modules/tailwindcss/dist/lib.js:35:2121)
-    at LazyResult.runOnRoot (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:329:16)
-    at LazyResult.runAsync (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:258:26)
-    at LazyResult.async (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:160:30)
-    at LazyResult.then (/app/node_modules/next/node_modules/postcss/lib/lazy-result.js:404:17)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at Object.<anonymous> (/app/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/app/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/app/src/app/globals.css:1:7)
-    at /app/node_modules/next/dist/compiled/webpack/bundle5.js:29:962742
-    at Hook.eval [as call] (eval at create (/app/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
-    at Hook.CALL_DELEGATE [as _call] (/app/node_modules/next/dist/compiled/webpack/bundle5.js:14:6272)
-    at /app/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
-    at tryRunOrWebpackError (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:316096)
-    at __webpack_require_module__ (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
-    at __nested_webpack_require_161494__ (/app/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
-    at /app/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
-    at symbolIterator (/app/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+./src/app/api/addresses/route.ts
+81:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
 
-Generated code for /app/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/app/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/app/src/app/globals.css
+./src/app/api/asset-categories/route.ts
+61:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
 
-Import trace for requested module:
-./src/app/globals.css
+./src/app/api/balance-entries/[id]/route.ts
+98:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
+./src/app/api/balance-entries/route.ts
+114:22  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+137:14  Error: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+148:14  Error: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
 
-> Build failed because of webpack errors
+./src/app/api/credit-cards/route.ts
+78:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/dashboard/category-breakdown-trend/route.ts
+4:24  Error: 'AssetType' is defined but never used.  @typescript-eslint/no-unused-vars
+9:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/dashboard/net-worth-summary/route.ts
+4:35  Error: 'AccountType' is defined but never used.  @typescript-eslint/no-unused-vars
+9:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/dashboard/net-worth-trend/route.ts
+9:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/fixed-deposits/[id]/route.ts
+98:9  Error: 'updateData' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/fixed-deposits/route.ts
+92:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/identity-documents/route.ts
+59:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/mutual-funds/[id]/route.ts
+86:9  Error: 'updateData' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/api/mutual-funds/route.ts
+84:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/pension-profiles/route.ts
+77:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/auth/verify-request/page.tsx
+22:9  Error: Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./src/components/accounts/AccountForm.tsx
+99:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+113:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+144:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+151:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/accounts/AccountManager.tsx
+57:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+77:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+118:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:107  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+154:123  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/addresses/AddressForm.tsx
+148:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/addresses/AddressManager.tsx
+14:11  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+36:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+100:83  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+100:117  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+100:133  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/balances/BalanceEntryForm.tsx
+22:7  Error: 'normalizeToFirstOfMonthUTC' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+153:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+192:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+198:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/balances/BalanceManager.tsx
+6:36  Error: 'CalendarIcon' is defined but never used.  @typescript-eslint/no-unused-vars
+6:63  Error: 'ChevronDown' is defined but never used.  @typescript-eslint/no-unused-vars
+65:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+73:6  Warning: React Hook useEffect has a missing dependency: 'selectedAccountId'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+91:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+129:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/categories/CategoryForm.tsx
+82:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+124:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+131:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/categories/CategoryManager.tsx
+39:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+84:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+112:109  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+112:126  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/credit-cards/CreditCardForm.tsx
+119:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+156:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+162:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/credit-cards/CreditCardManager.tsx
+10:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+11:53  Error: 'CreditCardType' is defined but never used.  @typescript-eslint/no-unused-vars
+11:69  Error: 'AssetType' is defined but never used.  @typescript-eslint/no-unused-vars
+68:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+88:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+146:107  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+146:127  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/widgets/NetWorthSummaryWidget.tsx
+44:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/fixed-deposits/FixedDepositForm.tsx
+123:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+161:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+167:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/fixed-deposits/FixedDepositManager.tsx
+8:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+9:68  Error: 'PayoutFrequency' is defined but never used.  @typescript-eslint/no-unused-vars
+9:85  Error: 'AccountType' is defined but never used.  @typescript-eslint/no-unused-vars
+9:98  Error: 'AssetType' is defined but never used.  @typescript-eslint/no-unused-vars
+78:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+99:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+162:109  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+162:127  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/identity/IdentityDocumentForm.tsx
+152:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+159:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/identity/IdentityManager.tsx
+11:28  Error: 'IdentityDocumentType' is defined but never used.  @typescript-eslint/no-unused-vars
+14:11  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+37:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+84:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+108:83  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+108:126  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+108:143  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/mutual-funds/MutualFundForm.tsx
+114:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+157:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+163:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/mutual-funds/MutualFundManager.tsx
+6:36  Error: 'TrendingUp' is defined but never used.  @typescript-eslint/no-unused-vars
+6:48  Error: 'Briefcase' is defined but never used.  @typescript-eslint/no-unused-vars
+10:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+11:66  Error: 'AccountType' is defined but never used.  @typescript-eslint/no-unused-vars
+11:79  Error: 'AssetType' is defined but never used.  @typescript-eslint/no-unused-vars
+68:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+88:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:107  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+155:123  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+./src/components/pension-funds/PensionForm.tsx
+108:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+143:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+149:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/pension-funds/PensionManager.tsx
+6:36  Error: 'Building' is defined but never used.  @typescript-eslint/no-unused-vars
+8:10  Error: 'Badge' is defined but never used.  @typescript-eslint/no-unused-vars
+9:57  Error: 'AssetType' is defined but never used.  @typescript-eslint/no-unused-vars
+59:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+107:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+158:111  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+158:131  Error: `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`.  react/no-unescaped-entities
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

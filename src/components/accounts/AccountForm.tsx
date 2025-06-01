@@ -96,7 +96,11 @@ export default function AccountForm({
 
   const handleSelectChange = (name: keyof AccountFormData, value: string) => {
     const valToSet = (value === "none" || value === "") ? null : value;
-    setFormData((prev) => ({ ...prev, [name]: valToSet as any })); // Cast 'any' for enum/string flexibility
+    if (name === 'accountType') {
+      setFormData((prev) => ({ ...prev, [name]: valToSet as AccountType | null }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: valToSet }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,16 +144,21 @@ export default function AccountForm({
 
       if (!response.ok) {
         const errorData = await response.json();
+        // Assuming errorData.error can be an array of objects with path and message (like Zod issues)
         const message = Array.isArray(errorData.error)
-          ? errorData.error.map((e: any) => `${e.path.join('.')}: ${e.message}`).join('; ')
+          ? errorData.error.map((e: { path: (string|number)[]; message: string; }) => `${e.path.join('.')}: ${e.message}`).join('; ')
           : (errorData.error?.message || errorData.error || 'Failed to save account');
         throw new Error(message);
       }
 
       onSave();
       onClose();
-    } catch (err: any) {
-      setServerError(err.message || "An unexpected error occurred.");
+    } catch (err: unknown) { // Changed to unknown
+      if (err instanceof Error) {
+        setServerError(err.message);
+      } else {
+        setServerError("An unexpected error occurred.");
+      }
       console.error("Save error:", err);
     } finally {
       setIsSubmitting(false);

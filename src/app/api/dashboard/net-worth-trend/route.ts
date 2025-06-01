@@ -6,7 +6,10 @@ import { Decimal } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
+// Note: GET already updated to _request, this is to ensure AssetType usage is correct
+// and no other unused vars if GET was the only change previously.
+// AssetType is used in the loop: entry.account.assetCategory.type === AssetType.ASSET
+export async function GET(_request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

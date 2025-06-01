@@ -95,7 +95,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
       return NextResponse.json({ error: 'Fixed deposit not found or access denied' }, { status: 404 });
     }
 
-    let updateData = { ...data };
+    const updateData = { ...data }; // Changed let to const
     if (updateData.currency) {
       updateData.currency = updateData.currency.toUpperCase();
     }
