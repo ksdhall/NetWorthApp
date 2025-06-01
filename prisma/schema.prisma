@@ -1,0 +1,525 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enum Definitions based on requirements
+enum Role {
+  OWNER
+  SHARED_USER
+  ADMIN
+}
+
+enum IdentityDocumentType {
+  AADHAR
+  PAN
+  PASSPORT
+  DL
+  OTHER
+}
+
+enum AddressType {
+  PERMANENT
+  RENTED
+  OFFICE
+  OTHER
+}
+
+enum AccountType {
+  SAVINGS
+  CHECKING
+  NRI
+  DEMAT
+  OTHER
+  LIABILITY
+}
+
+enum CreditCardType {
+  VISA
+  MASTERCARD
+  JCB
+  AMEX
+  OTHER
+}
+
+enum PayoutFrequency {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+  ON_MATURITY
+}
+
+enum PensionCountry {
+  JAPAN
+  INDIA
+  OTHER
+}
+
+enum RelationshipType {
+  SPOUSE
+  CHILD
+  PARENT
+  SIBLING
+  OTHER
+}
+
+enum FamilyAccountPermission {
+  VIEW
+  EDIT
+}
+
+enum AssetType {
+  ASSET
+  LIABILITY
+}
+
+enum ExpenseCategoryType {
+  RECURRING
+  VARIABLE
+  OPTIONAL
+}
+
+enum ExpenseFrequency {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum TransactionType {
+  EXPENSE
+  INCOME
+  TRANSFER
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_ACCOUNT
+  CREDIT_CARD
+  WALLET
+  OTHER
+}
+
+enum TaxCountry {
+  JAPAN
+  INDIA
+  OTHER
+}
+
+enum InterestInstrumentType {
+  SAVINGS_ACCOUNT
+  FIXED_DEPOSIT
+  MUTUAL_FUND
+  PENSION
+  OTHER_ASSET
+}
+
+// Models
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  passkeyPublicKey  String?
+  displayName       String?
+  preferredLanguage String   @default("EN")
+  preferredCurrency String   @default("USD")
+  role              Role     @default(OWNER)
+  isAdmin           Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  addresses           AddressHistory[]
+  identityDocuments   IdentityDocument[]
+  accounts            Account[]
+  creditCards         CreditCard[]
+  mutualFunds         MutualFund[]
+  fixedDeposits       FixedDeposit[]
+  pensionProfiles     PensionProfile[]
+  familyMembers       FamilyMember[]
+  recurringExpenses   RecurringExpense[]
+  transactions        Transaction[]
+  taxProfiles         TaxProfile[]
+  interestProjections InterestProjection[]
+  sharedWith          Share[]              @relation("SharedWithUser")
+  sharedBy            Share[]              @relation("SharedByUser")
+}
+
+model AddressHistory {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       AddressType
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+  fromDate   DateTime
+  toDate     DateTime?
+  isCurrent  Boolean     @default(false)
+  latitude   Float?
+  longitude  Float?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  accountsAsMainAddress       Account[]    @relation("AccountMainAddress")
+  creditCardsAsBillingAddress CreditCard[] @relation("CreditCardBillingAddress")
+
+  @@index([userId])
+}
+
+model IdentityDocument {
+  id               String               @id @default(cuid())
+  userId           String
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  docType          IdentityDocumentType
+  docNumber        String
+  issueDate        DateTime?
+  expiryDate       DateTime?
+  issuingAuthority String?
+  isPrimary        Boolean              @default(false)
+  scanPath         String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@unique([userId, docType, docNumber])
+  @@index([userId])
+}
+
+model AssetCategory {
+  id               String          @id @default(cuid())
+  name             String          @unique
+  type             AssetType
+  parentCategoryId String?
+  parentCategory   AssetCategory?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [id])
+  subCategories    AssetCategory[] @relation("CategoryHierarchy")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  accounts        Account[]
+  creditCards     CreditCard[] // If CreditCard has an AssetCategory link
+  mutualFunds     MutualFund[]
+  fixedDeposits   FixedDeposit[]
+  pensionProfiles PensionProfile[]
+}
+
+model Account {
+  id                     String      @id @default(cuid())
+  userId                 String
+  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname               String
+  bankName               String?
+  branch                 String?
+  accountNumberEncrypted String?
+  accountType            AccountType
+  currency               String
+  ifscSwift              String?
+
+  linkedAddressId String?
+  linkedAddress   AddressHistory? @relation("AccountMainAddress", fields: [linkedAddressId], references: [id])
+
+  linkedPhoneNumber            String?
+  onlineLoginUsernameEncrypted String?
+  onlineLoginPasswordEncrypted String?
+  twoFactorMethod              String?
+
+  assetCategoryId String?
+  assetCategory   AssetCategory? @relation(fields: [assetCategoryId], references: [id])
+
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  balanceEntries      BalanceEntry[]
+  transactions        Transaction[]
+  familyAccountLinks  FamilyAccountLink[]
+  interestProjections InterestProjection[] @relation("AccountInterest")
+  linkedMutualFunds   MutualFund[]
+  linkedFixedDeposits FixedDeposit[]
+
+  @@index([userId])
+  @@index([assetCategoryId])
+  @@index([linkedAddressId])
+}
+
+model CreditCard {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname         String
+  cardType         CreditCardType
+  lastFourDigits   String
+  issuingBank      String
+  creditLimit      Decimal         @db.Decimal(18, 2)
+  expiryDate       DateTime
+  billingAddressId String?
+  billingAddress   AddressHistory? @relation("CreditCardBillingAddress", fields: [billingAddressId], references: [id])
+  notes            String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  assetCategoryId String?
+  assetCategory   AssetCategory? @relation(fields: [assetCategoryId], references: [id])
+
+  @@index([userId])
+  @@index([billingAddressId])
+  @@index([assetCategoryId])
+}
+
+model MutualFund {
+  id                  String               @id @default(cuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fundName            String
+  folioNumber         String?
+  purchaseDate        DateTime?
+  unitsHeld           Decimal              @db.Decimal(18, 4)
+  averageCostPerUnit  Decimal              @db.Decimal(18, 4)
+  currentNAV          Decimal?             @db.Decimal(18, 4)
+  assetCategoryId     String?
+  assetCategory       AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
+  currency            String
+  linkedAccountId     String?
+  linkedAccount       Account?             @relation(fields: [linkedAccountId], references: [id])
+  notes               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  interestProjections InterestProjection[] @relation("MutualFundInterest")
+
+  @@index([userId])
+  @@index([assetCategoryId])
+  @@index([linkedAccountId])
+}
+
+model FixedDeposit {
+  id                  String               @id @default(cuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankName            String
+  branch              String?
+  fdAccountNumber     String?
+  principalAmount     Decimal              @db.Decimal(18, 2)
+  interestRate        Decimal              @db.Decimal(5, 2)
+  startDate           DateTime
+  maturityDate        DateTime
+  payoutFrequency     PayoutFrequency
+  assetCategoryId     String?
+  assetCategory       AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
+  currency            String
+  linkedAccountId     String?
+  linkedAccount       Account?             @relation(fields: [linkedAccountId], references: [id])
+  notes               String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  interestProjections InterestProjection[] @relation("FixedDepositInterest")
+
+  @@index([userId])
+  @@index([assetCategoryId])
+  @@index([linkedAccountId])
+}
+
+model PensionProfile {
+  id                   String               @id @default(cuid())
+  userId               String
+  user                 User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country              PensionCountry
+  employerName         String?
+  accountNumber        String?
+  contributionToDate   Decimal?             @db.Decimal(18, 2)
+  employeeSharePercent Decimal?             @db.Decimal(5, 2)
+  employerSharePercent Decimal?             @db.Decimal(5, 2)
+  projectedPayout      Decimal?             @db.Decimal(18, 2)
+  assetCategoryId      String?
+  assetCategory        AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
+  notes                String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  interestProjections  InterestProjection[] @relation("PensionInterest")
+
+  @@index([userId])
+  @@index([assetCategoryId])
+}
+
+model FamilyMember {
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName     String
+  relationship RelationshipType
+  dateOfBirth  DateTime?
+  email        String?          @unique
+  phone        String?
+  notes        String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  familyAccountLinks FamilyAccountLink[]
+  transactions       Transaction[]
+
+  @@index([userId])
+  @@index([email])
+}
+
+model FamilyAccountLink {
+  id             String                  @id @default(cuid())
+  familyMemberId String
+  familyMember   FamilyMember            @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  accountId      String
+  account        Account                 @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  permission     FamilyAccountPermission
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@unique([familyMemberId, accountId])
+  @@index([accountId])
+}
+
+model BalanceEntry {
+  id                 String   @id @default(cuid())
+  accountId          String
+  account            Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  entryDate          DateTime
+  balanceOriginal    Decimal  @db.Decimal(18, 2)
+  currency           String
+  exchangeRateToBase Decimal? @db.Decimal(18, 6)
+  balanceInBase      Decimal? @db.Decimal(18, 2)
+  locked             Boolean  @default(false)
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([accountId, entryDate])
+  @@index([entryDate])
+}
+
+model ExpenseCategory {
+  id               String              @id @default(cuid())
+  name             String              @unique
+  type             ExpenseCategoryType
+  parentCategoryId String?
+  parentCategory   ExpenseCategory?    @relation("ExpenseCategoryHierarchy", fields: [parentCategoryId], references: [id])
+  subCategories    ExpenseCategory[]   @relation("ExpenseCategoryHierarchy")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  recurringExpenses RecurringExpense[]
+  transactions      Transaction[]
+}
+
+model RecurringExpense {
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expenseCategoryId String
+  expenseCategory   ExpenseCategory  @relation(fields: [expenseCategoryId], references: [id])
+  amount            Decimal          @db.Decimal(18, 2)
+  frequency         ExpenseFrequency
+  startDate         DateTime
+  endDate           DateTime?
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([expenseCategoryId])
+}
+
+model Transaction {
+  id                String           @id @default(cuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date              DateTime
+  amount            Decimal          @db.Decimal(18, 2)
+  type              TransactionType
+  expenseCategoryId String?
+  expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
+  paymentMethod     PaymentMethod?
+  accountId         String?
+  account           Account?         @relation(fields: [accountId], references: [id])
+  description       String?
+  familyMemberId    String?
+  familyMember      FamilyMember?    @relation(fields: [familyMemberId], references: [id])
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([userId, date])
+  @@index([expenseCategoryId])
+  @@index([accountId])
+  @@index([familyMemberId])
+}
+
+model TaxProfile {
+  id              String     @id @default(cuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country         TaxCountry
+  taxYear         Int
+  monthlySalary   Decimal?   @db.Decimal(18, 2)
+  annualBonus     Decimal?   @db.Decimal(18, 2)
+  totalDeductions Decimal?   @db.Decimal(18, 2)
+  otherIncome     Decimal?   @db.Decimal(18, 2)
+  taxPaidToDate   Decimal?   @db.Decimal(18, 2)
+  notes           String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([userId, country, taxYear])
+  @@index([userId])
+}
+
+model InterestProjection {
+  id                 String                 @id @default(cuid())
+  userId             String
+  user               User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instrumentType     InterestInstrumentType
+  accountId          String?
+  account            Account?               @relation("AccountInterest", fields: [accountId], references: [id], onDelete: Cascade)
+  fixedDepositId     String?
+  fixedDeposit       FixedDeposit?          @relation("FixedDepositInterest", fields: [fixedDepositId], references: [id], onDelete: Cascade)
+  mutualFundId       String?
+  mutualFund         MutualFund?            @relation("MutualFundInterest", fields: [mutualFundId], references: [id], onDelete: Cascade)
+  pensionProfileId   String?
+  pensionProfile     PensionProfile?        @relation("PensionInterest", fields: [pensionProfileId], references: [id], onDelete: Cascade)
+  principalAmount    Decimal                @db.Decimal(18, 2)
+  annualInterestRate Decimal                @db.Decimal(5, 2)
+  notes              String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([fixedDepositId])
+  @@index([mutualFundId])
+  @@index([pensionProfileId])
+}
+
+enum SharableModule {
+  ACCOUNTS
+  BALANCES
+  TRANSACTIONS
+  INVESTMENTS
+  TAX_PROFILE
+}
+
+model Share {
+  id              String                  @id @default(cuid())
+  sharedByUserId  String
+  sharedByUser    User                    @relation("SharedByUser", fields: [sharedByUserId], references: [id], onDelete: Cascade)
+  sharedWithEmail String
+  sharedWithUser  User?                   @relation("SharedWithUser", fields: [sharedWithEmail], references: [email])
+  module          SharableModule
+  itemId          String?
+  permission      FamilyAccountPermission
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  @@unique([sharedByUserId, sharedWithEmail, module, itemId])
+  @@index([sharedByUserId])
+  @@index([sharedWithEmail])
+}
