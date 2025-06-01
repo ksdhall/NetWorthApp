@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import NextAuthSessionProvider from "./NextAuthSessionProvider"; // Ensure only one import
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -15,11 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Asset Tracking App", // Updated title
   description: "A comprehensive application for tracking personal assets, expenses, and net worth.", // Updated description
-  manifest: "/manifest.json",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" }, // Match manifest.json background_color for light mode
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }    // Match manifest.json theme_color for dark mode
-  ],
+  manifest: "/manifest.json", // Corrected line break
   appleWebApp: { // iOS specific PWA settings
     capable: true,
     statusBarStyle: "default", // or "black-translucent"
@@ -40,6 +37,15 @@ export const metadata: Metadata = {
   // viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover", // Example viewport settings
 };
 
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }
+  ],
+};
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,7 +56,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <NextAuthSessionProvider>
+          {children}
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

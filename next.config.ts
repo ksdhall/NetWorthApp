@@ -13,4 +13,4 @@ const pwaPlugin = withPWAInit({
   // runtimeCaching: [] // Example: add runtime caching strategies later if needed
 });
 
-export default pwaPlugin(nextConfig);
+export default pwaPlugin(nextConfig as any); // Type casting to 'any' to bypass type conflict

@@ -1,0 +1,34 @@
+
+> networthapp@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /app/node_modules/next-pwa/register.js
+> [PWA] Service worker: /app/public/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+ ✓ Compiled successfully in 8.0s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./next.config.ts:16:26
+Type error: Argument of type 'import("/app/node_modules/next/dist/server/config-shared").NextConfig' is not assignable to parameter of type 'import("/app/node_modules/@types/next-pwa/node_modules/next/dist/server/config-shared").NextConfig'.
+  Types of property 'i18n' are incompatible.
+    Type 'import("/app/node_modules/next/dist/server/config-shared").I18NConfig | null | undefined' is not assignable to type 'import("/app/node_modules/@types/next-pwa/node_modules/next/dist/server/config-shared").I18NConfig | null | undefined'.
+      Type 'import("/app/node_modules/next/dist/server/config-shared").I18NConfig' is not assignable to type 'import("/app/node_modules/@types/next-pwa/node_modules/next/dist/server/config-shared").I18NConfig'.
+        Types of property 'domains' are incompatible.
+          Type 'I18NDomains | undefined' is not assignable to type 'DomainLocale[] | undefined'.
+            The type 'I18NDomains' is 'readonly' and cannot be assigned to the mutable type 'DomainLocale[]'.
+
+[0m [90m 14 |[39m })[33m;[39m[0m
+[0m [90m 15 |[39m[0m
+[0m[31m[1m>[22m[39m[90m 16 |[39m [36mexport[39m [36mdefault[39m pwaPlugin(nextConfig)[33m;[39m[0m
+[0m [90m    |[39m                          [31m[1m^[22m[39m[0m
+[0m [90m 17 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null

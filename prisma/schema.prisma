@@ -1,4 +1,4 @@
-// prisma/schema.prisma
+// prisma/schema.prisma (with NextAuth models)
 
 datasource db {
   provider = "postgresql"
@@ -9,7 +9,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Enum Definitions based on requirements
+// Enum Definitions
 enum Role {
   OWNER
   SHARED_USER
@@ -119,22 +119,33 @@ enum InterestInstrumentType {
   OTHER_ASSET
 }
 
-// Models
+enum SharableModule {
+  ACCOUNTS
+  BALANCES
+  TRANSACTIONS
+  INVESTMENTS
+  TAX_PROFILE
+}
+
+// Main Application Models
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String? // For NextAuth
+  emailVerified     DateTime? // For NextAuth
+  image             String? // For NextAuth
   passkeyPublicKey  String?
   displayName       String?
-  preferredLanguage String   @default("EN")
-  preferredCurrency String   @default("USD")
-  role              Role     @default(OWNER)
-  isAdmin           Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  preferredLanguage String    @default("EN")
+  preferredCurrency String    @default("USD")
+  role              Role      @default(OWNER)
+  isAdmin           Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   addresses           AddressHistory[]
   identityDocuments   IdentityDocument[]
-  accounts            Account[]
+  accounts            Account[] // Financial accounts
   creditCards         CreditCard[]
   mutualFunds         MutualFund[]
   fixedDeposits       FixedDeposit[]
@@ -146,6 +157,10 @@ model User {
   interestProjections InterestProjection[]
   sharedWith          Share[]              @relation("SharedWithUser")
   sharedBy            Share[]              @relation("SharedByUser")
+
+  // Relations for NextAuth
+  nextAuthAccounts AccountNextAuth[]
+  sessions         Session[]
 }
 
 model AddressHistory {
@@ -202,38 +217,34 @@ model AssetCategory {
   updatedAt        DateTime        @updatedAt
 
   accounts        Account[]
-  creditCards     CreditCard[] // If CreditCard has an AssetCategory link
+  creditCards     CreditCard[]
   mutualFunds     MutualFund[]
   fixedDeposits   FixedDeposit[]
   pensionProfiles PensionProfile[]
 }
 
 model Account {
-  id                     String      @id @default(cuid())
-  userId                 String
-  user                   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nickname               String
-  bankName               String?
-  branch                 String?
-  accountNumberEncrypted String?
-  accountType            AccountType
-  currency               String
-  ifscSwift              String?
-
-  linkedAddressId String?
-  linkedAddress   AddressHistory? @relation("AccountMainAddress", fields: [linkedAddressId], references: [id])
-
+  id                           String          @id @default(cuid())
+  userId                       String
+  user                         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nickname                     String
+  bankName                     String?
+  branch                       String?
+  accountNumberEncrypted       String?
+  accountType                  AccountType
+  currency                     String
+  ifscSwift                    String?
+  linkedAddressId              String?
+  linkedAddress                AddressHistory? @relation("AccountMainAddress", fields: [linkedAddressId], references: [id])
   linkedPhoneNumber            String?
   onlineLoginUsernameEncrypted String?
   onlineLoginPasswordEncrypted String?
   twoFactorMethod              String?
-
-  assetCategoryId String?
-  assetCategory   AssetCategory? @relation(fields: [assetCategoryId], references: [id])
-
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  assetCategoryId              String?
+  assetCategory                AssetCategory?  @relation(fields: [assetCategoryId], references: [id])
+  notes                        String?
+  createdAt                    DateTime        @default(now())
+  updatedAt                    DateTime        @updatedAt
 
   balanceEntries      BalanceEntry[]
   transactions        Transaction[]
@@ -262,9 +273,8 @@ model CreditCard {
   notes            String?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
-
-  assetCategoryId String?
-  assetCategory   AssetCategory? @relation(fields: [assetCategoryId], references: [id])
+  assetCategoryId  String?
+  assetCategory    AssetCategory?  @relation(fields: [assetCategoryId], references: [id])
 
   @@index([userId])
   @@index([billingAddressId])
@@ -272,23 +282,24 @@ model CreditCard {
 }
 
 model MutualFund {
-  id                  String               @id @default(cuid())
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fundName            String
-  folioNumber         String?
-  purchaseDate        DateTime?
-  unitsHeld           Decimal              @db.Decimal(18, 4)
-  averageCostPerUnit  Decimal              @db.Decimal(18, 4)
-  currentNAV          Decimal?             @db.Decimal(18, 4)
-  assetCategoryId     String?
-  assetCategory       AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
-  currency            String
-  linkedAccountId     String?
-  linkedAccount       Account?             @relation(fields: [linkedAccountId], references: [id])
-  notes               String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  id                 String         @id @default(cuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fundName           String
+  folioNumber        String?
+  purchaseDate       DateTime?
+  unitsHeld          Decimal        @db.Decimal(18, 4)
+  averageCostPerUnit Decimal        @db.Decimal(18, 4)
+  currentNAV         Decimal?       @db.Decimal(18, 4)
+  assetCategoryId    String?
+  assetCategory      AssetCategory? @relation(fields: [assetCategoryId], references: [id])
+  currency           String
+  linkedAccountId    String? // Financial Account (Demat)
+  linkedAccount      Account?       @relation(fields: [linkedAccountId], references: [id])
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
   interestProjections InterestProjection[] @relation("MutualFundInterest")
 
   @@index([userId])
@@ -297,25 +308,26 @@ model MutualFund {
 }
 
 model FixedDeposit {
-  id                  String               @id @default(cuid())
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bankName            String
-  branch              String?
-  fdAccountNumber     String?
-  principalAmount     Decimal              @db.Decimal(18, 2)
-  interestRate        Decimal              @db.Decimal(5, 2)
-  startDate           DateTime
-  maturityDate        DateTime
-  payoutFrequency     PayoutFrequency
-  assetCategoryId     String?
-  assetCategory       AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
-  currency            String
-  linkedAccountId     String?
-  linkedAccount       Account?             @relation(fields: [linkedAccountId], references: [id])
-  notes               String?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  id              String          @id @default(cuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankName        String
+  branch          String?
+  fdAccountNumber String?
+  principalAmount Decimal         @db.Decimal(18, 2)
+  interestRate    Decimal         @db.Decimal(5, 2)
+  startDate       DateTime
+  maturityDate    DateTime
+  payoutFrequency PayoutFrequency
+  assetCategoryId String?
+  assetCategory   AssetCategory?  @relation(fields: [assetCategoryId], references: [id])
+  currency        String
+  linkedAccountId String? // Financial Account
+  linkedAccount   Account?        @relation(fields: [linkedAccountId], references: [id])
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
   interestProjections InterestProjection[] @relation("FixedDepositInterest")
 
   @@index([userId])
@@ -324,22 +336,23 @@ model FixedDeposit {
 }
 
 model PensionProfile {
-  id                   String               @id @default(cuid())
+  id                   String         @id @default(cuid())
   userId               String
-  user                 User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   country              PensionCountry
   employerName         String?
   accountNumber        String?
-  contributionToDate   Decimal?             @db.Decimal(18, 2)
-  employeeSharePercent Decimal?             @db.Decimal(5, 2)
-  employerSharePercent Decimal?             @db.Decimal(5, 2)
-  projectedPayout      Decimal?             @db.Decimal(18, 2)
+  contributionToDate   Decimal?       @db.Decimal(18, 2)
+  employeeSharePercent Decimal?       @db.Decimal(5, 2)
+  employerSharePercent Decimal?       @db.Decimal(5, 2)
+  projectedPayout      Decimal?       @db.Decimal(18, 2)
   assetCategoryId      String?
-  assetCategory        AssetCategory?       @relation(fields: [assetCategoryId], references: [id])
+  assetCategory        AssetCategory? @relation(fields: [assetCategoryId], references: [id])
   notes                String?
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  interestProjections  InterestProjection[] @relation("PensionInterest")
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  interestProjections InterestProjection[] @relation("PensionInterest")
 
   @@index([userId])
   @@index([assetCategoryId])
@@ -369,7 +382,7 @@ model FamilyAccountLink {
   id             String                  @id @default(cuid())
   familyMemberId String
   familyMember   FamilyMember            @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
-  accountId      String
+  accountId      String // Financial Account
   account        Account                 @relation(fields: [accountId], references: [id], onDelete: Cascade)
   permission     FamilyAccountPermission
   createdAt      DateTime                @default(now())
@@ -381,7 +394,7 @@ model FamilyAccountLink {
 
 model BalanceEntry {
   id                 String   @id @default(cuid())
-  accountId          String
+  accountId          String // Financial Account
   account            Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
   entryDate          DateTime
   balanceOriginal    Decimal  @db.Decimal(18, 2)
@@ -439,7 +452,7 @@ model Transaction {
   expenseCategoryId String?
   expenseCategory   ExpenseCategory? @relation(fields: [expenseCategoryId], references: [id])
   paymentMethod     PaymentMethod?
-  accountId         String?
+  accountId         String? // Financial Account
   account           Account?         @relation(fields: [accountId], references: [id])
   description       String?
   familyMemberId    String?
@@ -478,7 +491,7 @@ model InterestProjection {
   userId             String
   user               User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   instrumentType     InterestInstrumentType
-  accountId          String?
+  accountId          String? // Financial Account
   account            Account?               @relation("AccountInterest", fields: [accountId], references: [id], onDelete: Cascade)
   fixedDepositId     String?
   fixedDeposit       FixedDeposit?          @relation("FixedDepositInterest", fields: [fixedDepositId], references: [id], onDelete: Cascade)
@@ -499,14 +512,6 @@ model InterestProjection {
   @@index([pensionProfileId])
 }
 
-enum SharableModule {
-  ACCOUNTS
-  BALANCES
-  TRANSACTIONS
-  INVESTMENTS
-  TAX_PROFILE
-}
-
 model Share {
   id              String                  @id @default(cuid())
   sharedByUserId  String
@@ -523,3 +528,45 @@ model Share {
   @@index([sharedByUserId])
   @@index([sharedWithEmail])
 }
+
+// --- NextAuth.js Models ---
+model AccountNextAuth {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("nextauth_accounts") // Explicit table name for NextAuth Account
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("nextauth_sessions") // Explicit table name
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("nextauth_verification_tokens") // Explicit table name
+}
+
+// --- End NextAuth.js Models ---

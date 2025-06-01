@@ -1,0 +1,36 @@
+
+> networthapp@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.3
+   - Environments: .env
+
+   Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: /app/node_modules/next-pwa/register.js
+> [PWA] Service worker: /app/public/sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+ ✓ Compiled successfully in 9.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5)
+   Generating static pages (2/5)
+   Generating static pages (3/5)
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    5.62 kB         107 kB
+└ ○ /_not-found                            978 B         102 kB
++ First Load JS shared by all             101 kB
+  ├ chunks/4bd1b696-67ee12fb04071d3b.js  53.2 kB
+  ├ chunks/684-c85650275c47a38c.js         46 kB
+  └ other shared chunks (total)          1.88 kB
+
+
+○  (Static)  prerendered as static content
